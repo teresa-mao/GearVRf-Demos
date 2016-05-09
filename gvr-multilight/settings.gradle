@@ -1,0 +1,3 @@
+include ':framework'
+include ':gvrmultilight'
+project(':framework').projectDir = new File('../../GearVRf/GVRf/Framework/framework')
