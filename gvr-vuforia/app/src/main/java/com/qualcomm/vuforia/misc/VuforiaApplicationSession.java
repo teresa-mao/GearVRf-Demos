@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.WindowManager;
 
 import com.vuforia.CameraCalibration;
 import com.vuforia.CameraDevice;
@@ -89,6 +90,12 @@ public class VuforiaApplicationSession implements UpdateCallbackInterface
         // Query display dimensions:
         storeScreenDimensions();
         
+        // As long as this window is visible to the user, keep the device's
+        // screen turned on and bright:
+        mActivity.getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         mVuforiaFlags = Vuforia.GL_20;
         
         // Initialize Vuforia SDK asynchronously to avoid blocking the
@@ -174,14 +181,14 @@ public class VuforiaApplicationSession implements UpdateCallbackInterface
         
         mCameraRunning = true;
         
-        try
+        if(!CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO))
         {
-            setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_TRIGGERAUTO);
-        } catch (VuforiaApplicationException exceptionTriggerAuto)
-        {
-            setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_NORMAL);
+            if(!CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_TRIGGERAUTO))
+                CameraDevice.getInstance().setFocusMode(CameraDevice.FOCUS_MODE.FOCUS_MODE_NORMAL);
         }
     }
+    
+    
     
     
     // Stops any ongoing initialization, stops Vuforia

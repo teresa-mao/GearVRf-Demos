@@ -61,7 +61,7 @@ public class VuforiaSampleActivity extends GVRActivity implements
         vuforiaAppSession.initAR(this);
 
         script = new VuforiaSampleScript();
-        setScript(script, "gvr.xml");
+        setScript(script, "gvr_note4.xml");
     }
 
     public static boolean isVuforiaActive() {
@@ -143,12 +143,12 @@ public class VuforiaSampleActivity extends GVRActivity implements
                 Log.e(TAG, e.getString());
             }
 
-            boolean result = CameraDevice.getInstance().setFocusMode(
-                    CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO);
+          //  boolean result = CameraDevice.getInstance().setFocusMode(
+            //        CameraDevice.FOCUS_MODE.FOCUS_MODE_CONTINUOUSAUTO);
 
-            if (result == false) {
-                Log.e(TAG, "Unable to enable continuous autofocus");
-            }
+          //  if (result == false) {
+           //     Log.e(TAG, "Unable to enable continuous autofocus");
+           // }
 
             script.onVuforiaInitialized();
         } else {

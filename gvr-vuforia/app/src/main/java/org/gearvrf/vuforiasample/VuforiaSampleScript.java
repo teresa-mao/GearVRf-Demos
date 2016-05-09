@@ -7,6 +7,7 @@ import org.gearvrf.GVRContext;
 import org.gearvrf.GVRDrawFrameListener;
 import org.gearvrf.GVRMaterial;
 import org.gearvrf.GVRMaterial.GVRShaderType;
+import org.gearvrf.GVRRenderData.GVRRenderMaskBit;
 import org.gearvrf.GVRRenderData.GVRRenderingOrder;
 import org.gearvrf.GVRMesh;
 import org.gearvrf.GVRRenderData;
@@ -89,30 +90,30 @@ public class VuforiaSampleScript extends GVRScript {
         return init;
     }
 
+    
+    
     private void createCameraPassThrough() {
-        passThroughObject = new GVRSceneObject(gvrContext, 16.0f / 9.0f, 1.0f);
+        passThroughObject = new GVRSceneObject(gvrContext, 24.0f*16.0f / 9.0f, 24.0f);
 
-        passThroughObject.getTransform().setPosition(0.0f, 0.0f, -1000.0f);
-        passThroughObject.getTransform().setScaleX(1000f);
-        passThroughObject.getTransform().setScaleY(1000f);
+        passThroughObject.getTransform().setPositionZ(-30f);
+        passThroughObject.getTransform().setScaleX(1.5f);
+        passThroughObject.getTransform().setScaleY(1.5f);
 
         GVRTexture passThroughTexture;
-
         passThroughTexture = new GVRRenderTexture(gvrContext,
-                VUFORIA_CAMERA_WIDTH, VUFORIA_CAMERA_HEIGHT);
+                VUFORIA_CAMERA_WIDTH, VUFORIA_CAMERA_HEIGHT); // width? height
 
         GVRRenderData renderData = passThroughObject.getRenderData();
+        renderData.setRenderingOrder(GVRRenderingOrder.BACKGROUND);
+
         GVRMaterial material = new GVRMaterial(gvrContext);
         renderData.setMaterial(material);
+        renderData.setRenderMask(GVRRenderMaskBit.Left
+                | GVRRenderMaskBit.Right);
+        
         material.setMainTexture(passThroughTexture);
         material.setShaderType(GVRShaderType.Texture.ID);
 
-        // the following texture coordinate values are determined empirically
-        // and do not match what we expect them to be. but still they work :)
-        float[] texCoords = { 0.0f, 0.0f, 0.0f, 0.70f, 0.62f, 0.0f, 0.62f, 0.7f };
-        GVRMesh mesh = renderData.getMesh();
-        mesh.setTexCoords(texCoords);
-        renderData.setMesh(mesh);
         renderData.setDepthTest(false);
 
         mTextureUnit = new GLTextureUnit(0);
@@ -148,8 +149,6 @@ public class VuforiaSampleScript extends GVRScript {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        teapot.getTransform().setPosition(0f, 0f, -0.5f);
     }
 
     private float[] convertMatrix = { 1f, 0f, 0f, 0f, 0f, -1f, 0f, 0f, 0f, 0f,
@@ -191,7 +190,8 @@ public class VuforiaSampleScript extends GVRScript {
 
                 float scaleFactor = ((ImageTarget) trackable).getSize()
                         .getData()[0];
-                Matrix.rotateM(convertedMVMatrix, 0, 90, 1, 0, 0);
+               Matrix.translateM(convertedMVMatrix, 0, 0.0f, 0.0f,
+                        scaleFactor);
                 Matrix.scaleM(convertedMVMatrix, 0, scaleFactor, scaleFactor,
                         scaleFactor);
 
@@ -201,6 +201,9 @@ public class VuforiaSampleScript extends GVRScript {
                 Matrix.multiplyMM(totalMVMatrix, 0, gvrMVMatrix, 0,
                         convertedMVMatrix, 0);
                 teapot.getTransform().setModelMatrix(totalMVMatrix);
+                Log.d("teresa", " x " + teapot.getTransform().getPositionX() + 
+                        " y " + teapot.getTransform().getPositionY() + 
+                        " z " + teapot.getTransform().getPositionZ()); 
 
                 showTeapot();
                 
